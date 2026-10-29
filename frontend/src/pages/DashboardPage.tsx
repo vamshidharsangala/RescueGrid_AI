@@ -3,22 +3,21 @@ import { Link } from 'react-router-dom';
 import { dashboardApi, incidentsApi, resourcesApi } from '../services/api';
 import { useSocket } from '../hooks/useSocket';
 import type { Incident, DashboardStats, Resource } from '../types';
-import { StatCard, IncidentCard, LoadingSpinner, EmptyState, AIDisclaimer } from '../components/shared';
+import { StatCard, IncidentCard, LoadingSpinner, EmptyState } from '../components/shared';
 import {
-  AlertTriangle, Users, Shield, Clock, Radio, RefreshCw,
-  ChevronRight, ExternalLink
+  AlertTriangle, Users, Shield, Clock, Radio, RefreshCw, ExternalLink
 } from 'lucide-react';
-import { getStatusLabel, getStatusColor, getResourceStatusClass, getResourceTypeIcon, getResourceTypeLabel, timeAgo, getDisasterLabel } from '../utils/helpers';
+import { getResourceStatusClass, getResourceTypeIcon } from '../utils/helpers';
 import DisasterMap from '../components/DisasterMap';
 import IncidentDetail from '../components/IncidentDetail';
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [stats, setStats]                 = useState<DashboardStats | null>(null);
+  const [incidents, setIncidents]         = useState<Incident[]>([]);
+  const [resources, setResources]         = useState<Resource[]>([]);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading]             = useState(true);
+  const [refreshing, setRefreshing]       = useState(false);
   const { lastIncident, lastAlert, connected } = useSocket();
 
   const load = useCallback(async () => {
@@ -41,25 +40,20 @@ export default function DashboardPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // React to real-time updates
   useEffect(() => {
     if (lastIncident) {
       setIncidents(prev => {
         const idx = prev.findIndex(i => i.id === lastIncident.id);
         if (idx >= 0) {
-          const next = [...prev];
-          next[idx] = lastIncident;
-          return next;
+          const next = [...prev]; next[idx] = lastIncident; return next;
         }
         return [lastIncident, ...prev].slice(0, 20);
       });
-      load(); // refresh stats
+      load();
     }
   }, [lastIncident]);
 
-  useEffect(() => {
-    if (lastAlert) load();
-  }, [lastAlert]);
+  useEffect(() => { if (lastAlert) load(); }, [lastAlert]);
 
   const refresh = () => { setRefreshing(true); load(); };
 
@@ -68,7 +62,7 @@ export default function DashboardPage() {
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size={40} className="mx-auto mb-3" />
-          <p className="text-slate-500 text-sm">Loading command center...</p>
+          <p className="text-sm" style={{ color: '#77746F' }}>Loading command center...</p>
         </div>
       </div>
     );
@@ -76,14 +70,22 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Header bar */}
-      <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between shrink-0">
+      {/* ── Header bar ── */}
+      <div
+        className="px-6 py-3 flex items-center justify-between shrink-0"
+        style={{ backgroundColor: '#fff', borderBottom: '1px solid #E7E5E0' }}
+      >
         <div>
-          <h1 className="text-lg font-bold text-slate-900">RESCUEGRID COMMAND CENTER</h1>
-          <p className="text-xs text-slate-400">Real-time disaster coordination · {new Date().toLocaleString('en-IN')}</p>
+          <h1 className="text-base font-bold" style={{ color: '#181818' }}>RESCUEGRID COMMAND CENTER</h1>
+          <p className="text-xs" style={{ color: '#77746F' }}>
+            Real-time disaster coordination · {new Date().toLocaleString('en-IN')}
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className={`flex items-center gap-1.5 text-xs ${connected ? 'text-emerald-600' : 'text-red-500'}`}>
+          <div
+            className="flex items-center gap-1.5 text-xs"
+            style={{ color: connected ? '#C62828' : '#77746F' }}
+          >
             <Radio size={12} className={connected ? 'animate-pulse' : ''} />
             {connected ? 'Live' : 'Offline'}
           </div>
@@ -95,23 +97,64 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* ── Stats ── */}
       {stats && (
-        <div className="grid grid-cols-4 gap-4 px-6 py-4 shrink-0 bg-slate-50 border-b border-slate-200">
-          <StatCard label="Active Incidents" value={stats.activeIncidents} icon={Shield} color="text-navy-800" bgColor="bg-navy-100" />
-          <StatCard label="Critical" value={stats.criticalIncidents} icon={AlertTriangle} color="text-red-700" bgColor="bg-red-100" subtext="Priority ≥86" />
-          <StatCard label="Resources Available" value={stats.availableResources} icon={Users} color="text-emerald-700" bgColor="bg-emerald-100" />
-          <StatCard label="People at Risk" value={stats.peopleAtRisk} icon={Clock} color="text-orange-700" bgColor="bg-orange-100" subtext="Active incidents only" />
+        <div
+          className="grid grid-cols-4 gap-4 px-6 py-4 shrink-0"
+          style={{ backgroundColor: '#F7F6F3', borderBottom: '1px solid #E7E5E0' }}
+        >
+          <StatCard
+            label="Active Incidents"
+            value={stats.activeIncidents}
+            icon={Shield}
+            iconColor="#292929"
+            iconBg="#E7E5E0"
+          />
+          <StatCard
+            label="Critical"
+            value={stats.criticalIncidents}
+            icon={AlertTriangle}
+            iconColor="#A61F24"
+            iconBg="#F8E8E7"
+            subtext="Priority ≥86"
+          />
+          <StatCard
+            label="Resources Available"
+            value={stats.availableResources}
+            icon={Users}
+            iconColor="#292929"
+            iconBg="#E7E5E0"
+          />
+          <StatCard
+            label="People at Risk"
+            value={stats.peopleAtRisk}
+            icon={Clock}
+            iconColor="#805515"
+            iconBg="#F5EBD7"
+            subtext="Active incidents only"
+          />
         </div>
       )}
 
-      {/* Main 3-column layout */}
+      {/* ── Main 3-column layout ── */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Incident list */}
-        <div className="w-72 border-r border-slate-200 bg-white flex flex-col overflow-hidden shrink-0">
-          <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-700">Active Incidents</h2>
-            <Link to="/incidents" className="text-xs text-navy-600 hover:text-navy-800 flex items-center gap-1">
+        <div
+          className="w-72 flex flex-col overflow-hidden shrink-0"
+          style={{ backgroundColor: '#fff', borderRight: '1px solid #E7E5E0' }}
+        >
+          <div
+            className="px-4 py-3 flex items-center justify-between"
+            style={{ borderBottom: '1px solid #E7E5E0' }}
+          >
+            <h2 className="text-sm font-semibold" style={{ color: '#181818' }}>Active Incidents</h2>
+            <Link
+              to="/admin/incidents"
+              className="text-xs flex items-center gap-1 transition-colors"
+              style={{ color: '#77746F' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C62828'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#77746F'; }}
+            >
               View all <ExternalLink size={10} />
             </Link>
           </div>
@@ -142,7 +185,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Right: Incident detail */}
-        <div className="w-80 border-l border-slate-200 bg-white flex flex-col overflow-hidden shrink-0">
+        <div
+          className="w-80 flex flex-col overflow-hidden shrink-0"
+          style={{ backgroundColor: '#fff', borderLeft: '1px solid #E7E5E0' }}
+        >
           {selectedIncident ? (
             <IncidentDetail
               incident={selectedIncident}
@@ -151,29 +197,45 @@ export default function DashboardPage() {
             />
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-4">
-                <Shield size={22} className="text-slate-400" />
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                style={{ backgroundColor: '#F7F6F3', border: '1px solid #E7E5E0' }}
+              >
+                <Shield size={22} style={{ color: '#B7B5B0' }} />
               </div>
-              <p className="text-sm text-slate-500 font-medium">Select an incident</p>
-              <p className="text-xs text-slate-400 mt-1">Click on an incident or map marker to view AI intelligence and resource recommendations</p>
+              <p className="text-sm font-medium" style={{ color: '#292929' }}>Select an incident</p>
+              <p className="text-xs mt-1" style={{ color: '#77746F' }}>
+                Click on an incident or map marker to view AI intelligence and resource recommendations
+              </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Bottom resource strip */}
-      <div className="bg-white border-t border-slate-200 px-6 py-2 shrink-0">
+      {/* ── Bottom resource strip ── */}
+      <div
+        className="px-6 py-2 shrink-0"
+        style={{ backgroundColor: '#fff', borderTop: '1px solid #E7E5E0' }}
+      >
         <div className="flex items-center gap-6 overflow-x-auto">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide shrink-0">Resources</span>
+          <span className="text-xs font-semibold uppercase tracking-wide shrink-0" style={{ color: '#77746F' }}>
+            Resources
+          </span>
           {resources.slice(0, 8).map(r => (
             <div key={r.id} className="flex items-center gap-1.5 shrink-0">
               <span className="text-sm">{getResourceTypeIcon(r.type)}</span>
-              <span className="text-xs text-slate-700">{r.name}</span>
+              <span className="text-xs" style={{ color: '#292929' }}>{r.name}</span>
               <span className={`badge ${getResourceStatusClass(r.status)} text-xs`}>{r.status}</span>
             </div>
           ))}
           {resources.length > 8 && (
-            <Link to="/resources" className="text-xs text-navy-600 hover:underline shrink-0">
+            <Link
+              to="/admin/resources"
+              className="text-xs transition-colors shrink-0"
+              style={{ color: '#77746F' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C62828'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#77746F'; }}
+            >
               +{resources.length - 8} more
             </Link>
           )}

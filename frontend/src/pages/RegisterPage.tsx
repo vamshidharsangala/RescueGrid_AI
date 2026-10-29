@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
-import { AlertTriangle, Siren, UserPlus } from 'lucide-react';
+import { AlertTriangle, Shield, UserPlus } from 'lucide-react';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'CITIZEN' });
-  const [error, setError] = useState('');
+  const [form, setForm]     = useState({ name: '', email: '', password: '', phone: '', role: 'CITIZEN' });
+  const [error, setError]   = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const navigate              = useNavigate();
   const { updateUserContext } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,74 +37,115 @@ export default function RegisterPage() {
     }
   };
 
+  const inputClass = "w-full px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 focus:outline-none";
+  const inputStyle = {
+    backgroundColor: '#2D2D2D',
+    border: '1px solid #383838',
+    color: '#F7F6F3',
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 font-sans text-slate-100">
+    <div
+      className="min-h-screen flex items-center justify-center p-6 font-sans"
+      style={{ backgroundColor: '#181818' }}
+    >
       <div className="w-full max-w-md space-y-6">
+
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-red-900/40">
-            <Siren className="w-7 h-7 text-white" />
+          <div
+            className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto"
+            style={{ backgroundColor: '#C62828' }}
+          >
+            <Shield className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-white text-2xl font-extrabold">Create Citizen Account</h1>
-          <p className="text-slate-400 text-xs">Join RescueGrid Emergency Response Network</p>
+          <h1 className="text-2xl font-bold" style={{ color: '#F7F6F3' }}>Create Citizen Account</h1>
+          <p className="text-xs" style={{ color: '#77746F' }}>Join RescueGrid Emergency Response Network</p>
         </div>
 
         {/* Form Box */}
-        <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-xl p-6 sm:p-8 space-y-4"
+          style={{ backgroundColor: '#242424', border: '1px solid #383838' }}
+        >
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Full Name *</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#B7B5B0' }}>
+              Full Name *
+            </label>
             <input
               value={form.name}
               onChange={e => setForm({ ...form, name: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-red-500"
+              className={inputClass}
+              style={{ ...inputStyle }}
               placeholder="e.g. Rahul Sharma"
               required
               id="register-name"
+              onFocus={e => { e.currentTarget.style.borderColor = '#C62828'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.15)'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#383838'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Email Address *</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#B7B5B0' }}>
+              Email Address *
+            </label>
             <input
               type="email"
               value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-red-500"
+              className={inputClass}
+              style={{ ...inputStyle }}
               placeholder="rahul@example.com"
               required
               id="register-email"
+              onFocus={e => { e.currentTarget.style.borderColor = '#C62828'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.15)'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#383838'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Mobile Phone Number *</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#B7B5B0' }}>
+              Mobile Phone Number *
+            </label>
             <input
               type="tel"
               value={form.phone}
               onChange={e => setForm({ ...form, phone: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-red-500"
+              className={inputClass}
+              style={{ ...inputStyle }}
               placeholder="+91 9876543210"
               required
               id="register-phone"
+              onFocus={e => { e.currentTarget.style.borderColor = '#C62828'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.15)'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#383838'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Password *</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider" style={{ color: '#B7B5B0' }}>
+              Password *
+            </label>
             <input
               type="password"
               value={form.password}
               onChange={e => setForm({ ...form, password: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:border-red-500"
+              className={inputClass}
+              style={{ ...inputStyle }}
               placeholder="Min 6 characters"
               required
               id="register-password"
+              onFocus={e => { e.currentTarget.style.borderColor = '#C62828'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.15)'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#383838'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-xs text-red-300 bg-red-950/80 border border-red-800 rounded-xl p-3">
-              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <div
+              className="flex items-center gap-2 text-xs rounded-lg p-3"
+              style={{ backgroundColor: '#F8E8E7', border: '1px solid #E8C2C0', color: '#A61F24' }}
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -113,16 +154,19 @@ export default function RegisterPage() {
             type="submit"
             disabled={loading}
             id="register-submit"
-            className="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-3 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            style={{ backgroundColor: '#C62828', color: '#fff' }}
+            onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLElement).style.backgroundColor = '#A61F24'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#C62828'; }}
           >
             <UserPlus className="w-4 h-4" />
             {loading ? 'Creating Account...' : 'Complete Registration'}
           </button>
         </form>
 
-        <p className="text-slate-400 text-xs text-center">
+        <p className="text-xs text-center" style={{ color: '#77746F' }}>
           Already registered?{' '}
-          <Link to="/login" className="text-red-400 hover:text-red-300 font-bold">
+          <Link to="/login" className="font-semibold" style={{ color: '#C62828' }}>
             Sign In
           </Link>
         </p>

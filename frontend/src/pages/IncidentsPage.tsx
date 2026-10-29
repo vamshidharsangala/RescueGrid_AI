@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { incidentsApi } from '../services/api';
 import type { Incident, DisasterType, IncidentStatus } from '../types';
 import { LoadingSpinner, EmptyState, StatusBadge } from '../components/shared';
-import { Search, Filter, ChevronRight, AlertTriangle, Users, MapPin, Clock, BarChart2 } from 'lucide-react';
+import { Search, ChevronRight, AlertTriangle, Users, MapPin } from 'lucide-react';
 import { getDisasterLabel, getDisasterIcon, getPriorityLabel, getPriorityColor, timeAgo } from '../utils/helpers';
 
 const DISASTER_TYPES: DisasterType[] = ['FLOOD', 'FIRE', 'EARTHQUAKE', 'LANDSLIDE', 'CYCLONE', 'BUILDING_COLLAPSE', 'MEDICAL_EMERGENCY', 'ROAD_ACCIDENT', 'OTHER'];
@@ -44,11 +44,11 @@ export default function IncidentsPage() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4">
+      <div className="bg-white px-6 py-4" style={{ borderBottom: '1px solid #E7E5E0' }}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">Incident Management</h1>
-            <p className="text-xs text-slate-400">{total} total incidents</p>
+            <h1 className="text-lg font-bold" style={{ color: '#181818' }}>Incident Management</h1>
+            <p className="text-xs" style={{ color: '#77746F' }}>{total} total incidents</p>
           </div>
           <Link to="/report" className="btn-danger">Report Emergency</Link>
         </div>
@@ -56,7 +56,7 @@ export default function IncidentsPage() {
         {/* Filters */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-48">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#B7B5B0' }} />
             <input
               value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search incidents, locations..."
@@ -91,34 +91,37 @@ export default function IncidentsPage() {
           <EmptyState icon={AlertTriangle} title="No incidents found" description="Try adjusting your filters" />
         ) : (
           <table className="w-full">
-            <thead className="sticky top-0 bg-slate-50 border-b border-slate-200">
+            <thead className="sticky top-0" style={{ backgroundColor: '#F7F6F3', borderBottom: '1px solid #E7E5E0' }}>
               <tr>
                 {['Incident', 'Location', 'People', 'Priority', 'Confidence', 'Status', 'Created', ''].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                  <th key={h} className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap" style={{ color: '#77746F' }}>{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody style={{ borderTop: '1px solid #E7E5E0' }}>
               {incidents.map(incident => (
                 <tr
                   key={incident.id}
-                  className="hover:bg-slate-50 cursor-pointer transition-colors"
+                  className="cursor-pointer transition-colors"
+                  style={{ borderBottom: '1px solid #F7F6F3' }}
                   onClick={() => navigate(`/incidents/${incident.id}`)}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#F7F6F3'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = ''; }}
                 >
                   <td className="px-4 py-3">
                     {incident.isDevelopmentData && <span className="text-xs text-amber-600 mr-1">⚠️</span>}
                     <div className="flex items-center gap-2">
                       <span className="text-base">{getDisasterIcon(incident.type)}</span>
                       <div>
-                        <div className="text-sm font-semibold text-slate-800">{getDisasterLabel(incident.type)}</div>
-                        <div className="text-xs text-slate-400 font-mono">{incident.incidentNumber}</div>
+                        <div className="text-sm font-semibold" style={{ color: '#181818' }}>{getDisasterLabel(incident.type)}</div>
+                        <div className="text-xs font-mono" style={{ color: '#77746F' }}>{incident.incidentNumber}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-600 max-w-[160px]">
+                  <td className="px-4 py-3 text-xs max-w-[160px]" style={{ color: '#77746F' }}>
                     <div className="flex items-center gap-1"><MapPin size={10} /><span className="truncate">{incident.locationName || 'Unknown'}</span></div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-700 whitespace-nowrap">
+                  <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: '#292929' }}>
                     <div className="flex items-center gap-1"><Users size={10} />{incident.peopleAffected}</div>
                     {incident.vulnerablePeople && <div className="text-orange-500 text-xs">Vulnerable</div>}
                   </td>
@@ -128,11 +131,11 @@ export default function IncidentsPage() {
                       <span className="text-xs" style={{ color: getPriorityColor(incident.priorityScore) }}>{getPriorityLabel(incident.priorityScore)}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-600">{Math.round(incident.confidenceScore * 100)}%</td>
+                  <td className="px-4 py-3 text-xs" style={{ color: '#77746F' }}>{Math.round(incident.confidenceScore * 100)}%</td>
                   <td className="px-4 py-3"><StatusBadge status={incident.status} /></td>
-                  <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{timeAgo(incident.createdAt)}</td>
+                  <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: '#B7B5B0' }}>{timeAgo(incident.createdAt)}</td>
                   <td className="px-4 py-3">
-                    <ChevronRight size={14} className="text-slate-400" />
+                    <ChevronRight size={14} style={{ color: '#B7B5B0' }} />
                   </td>
                 </tr>
               ))}
@@ -143,8 +146,8 @@ export default function IncidentsPage() {
 
       {/* Pagination */}
       {total > limit && (
-        <div className="bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between">
-          <p className="text-xs text-slate-500">Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</p>
+        <div className="bg-white px-6 py-3 flex items-center justify-between" style={{ borderTop: '1px solid #E7E5E0' }}>
+          <p className="text-xs" style={{ color: '#77746F' }}>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</p>
           <div className="flex gap-2">
             <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="btn-secondary btn-sm">Previous</button>
             <button disabled={page * limit >= total} onClick={() => setPage(p => p + 1)} className="btn-secondary btn-sm">Next</button>

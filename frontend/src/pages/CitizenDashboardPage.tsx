@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { dashboardApi } from '../services/api';
 import { LoadingSpinner } from '../components/shared';
 import {
-  AlertTriangle, FileText, CheckCircle2, Clock, ShieldAlert,
+  AlertTriangle, FileText, CheckCircle2, Clock, Shield,
   MapPin, Plus, ArrowRight, Activity, PhoneCall
 } from 'lucide-react';
 
@@ -16,21 +16,16 @@ interface CitizenStats {
 }
 
 export default function CitizenDashboardPage() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { user }  = useAuth();
+  const navigate  = useNavigate();
   const [stats, setStats] = useState<CitizenStats>({
-    totalReports: 0,
-    underReview: 0,
-    inProgress: 0,
-    resolved: 0
+    totalReports: 0, underReview: 0, inProgress: 0, resolved: 0
   });
   const [recentReports, setRecentReports] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading]         = useState(true);
   const [copiedLocation, setCopiedLocation] = useState(false);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  useEffect(() => { fetchStats(); }, []);
 
   const fetchStats = async () => {
     setIsLoading(true);
@@ -50,15 +45,13 @@ export default function CitizenDashboardPage() {
   const handleShareLocation = () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        pos => {
           const coords = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
           navigator.clipboard.writeText(coords);
           setCopiedLocation(true);
           setTimeout(() => setCopiedLocation(false), 3000);
         },
-        () => {
-          alert('Location access denied or unavailable.');
-        }
+        () => alert('Location access denied or unavailable.')
       );
     }
   };
@@ -70,143 +63,205 @@ export default function CitizenDashboardPage() {
     return 'Good Evening';
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-red-950 via-slate-900 to-slate-950 border border-red-900/40 rounded-3xl p-6 sm:p-8 shadow-xl">
-        <div className="relative z-10 space-y-4 max-w-3xl">
-          <div className="inline-flex items-center gap-2 bg-red-950/80 border border-red-800 text-red-400 text-xs px-3 py-1 rounded-full font-medium">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-            24/7 Citizen Emergency Response Active
-          </div>
+  const statusBadge = (status: string) => {
+    const map: Record<string, { bg: string; color: string; border: string; label: string }> = {
+      RESOLVED:   { bg: '#E7E5E0', color: '#292929',  border: '#D8D5CF', label: 'Resolved' },
+      SUBMITTED:  { bg: '#F5EBD7', color: '#805515',  border: '#DDD0AC', label: 'Under Review' },
+      VERIFIED:   { bg: '#EAF1F7', color: '#2a7fa8',  border: '#B7D5E8', label: 'Verified' },
+      IN_PROGRESS:{ bg: '#F8E8E7', color: '#A61F24',  border: '#E8C2C0', label: 'In Progress' },
+    };
+    const s = map[status] || { bg: '#E7E5E0', color: '#77746F', border: '#D8D5CF', label: status.replace('_', ' ') };
+    return (
+      <span
+        className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+        style={{ backgroundColor: s.bg, color: s.color, border: `1px solid ${s.border}` }}
+      >
+        {s.label}
+      </span>
+    );
+  };
 
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+  return (
+    <div className="space-y-7">
+
+      {/* ── Welcome Hero ── */}
+      <div
+        className="relative overflow-hidden rounded-xl p-6 sm:p-8"
+        style={{ backgroundColor: '#181818' }}
+      >
+        {/* Emergency status badge */}
+        <div className="mb-4">
+          <span
+            className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-full"
+            style={{ backgroundColor: '#F8E8E7', color: '#C62828', border: '1px solid #E8C2C0' }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" style={{ animation: 'markerPulse 2s infinite' }} />
+            24/7 Citizen Emergency Response Active
+          </span>
+        </div>
+
+        <div className="relative z-10 space-y-3 max-w-2xl">
+          <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: '#FFFFFF' }}>
             {getTimeOfDay()}, {user?.name || 'Citizen'}
           </h1>
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+          <p className="text-sm sm:text-base leading-relaxed" style={{ color: '#D0CECA' }}>
             Report disasters or distress situations instantly. AI automatically extracts key details, prioritizes high-impact incidents, and connects you with active emergency response teams.
           </p>
 
           {/* Quick Actions */}
-          <div className="pt-2 flex flex-wrap items-center gap-3">
+          <div className="pt-3 flex flex-wrap items-center gap-3">
             <button
               onClick={() => navigate('/report')}
-              className="flex items-center gap-2 px-5 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/40 transition-all transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-lg transition-all"
+              style={{ backgroundColor: '#C62828' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#A61F24'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#C62828'; }}
             >
-              <AlertTriangle className="w-5 h-5" />
+              <AlertTriangle className="w-4 h-4" />
               Report Emergency Now
             </button>
 
             <button
               onClick={handleShareLocation}
-              className="flex items-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium rounded-xl transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all"
+              style={{ backgroundColor: '#2D2D2D', color: '#E7E5E0', border: '1px solid #383838' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#383838'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#2D2D2D'; }}
             >
-              <MapPin className="w-4 h-4 text-red-400" />
-              {copiedLocation ? 'GPS Copied to Clipboard!' : 'Share Current GPS'}
+              <MapPin className="w-4 h-4" style={{ color: '#C62828' }} />
+              {copiedLocation ? 'GPS Copied!' : 'Share Current GPS'}
             </button>
 
             <button
               onClick={() => navigate('/my-reports')}
-              className="flex items-center gap-2 px-4 py-3 bg-slate-800/60 hover:bg-slate-800 text-slate-300 font-medium rounded-xl transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all"
+              style={{ backgroundColor: '#2D2D2D', color: '#B7B5B0', border: '1px solid #383838' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#383838'; (e.currentTarget as HTMLElement).style.color = '#E7E5E0'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#2D2D2D'; (e.currentTarget as HTMLElement).style.color = '#B7B5B0'; }}
             >
-              <FileText className="w-4 h-4 text-slate-400" />
+              <FileText className="w-4 h-4" />
               View My Reports
             </button>
           </div>
         </div>
 
-        {/* Decorative Background Icon */}
-        <ShieldAlert className="absolute -bottom-8 -right-8 w-64 h-64 text-red-900/10 pointer-events-none" />
+        {/* Decorative icon */}
+        <Shield
+          className="absolute -bottom-6 -right-6 pointer-events-none"
+          style={{ width: '180px', height: '180px', color: 'rgba(198,40,40,0.06)' }}
+        />
       </div>
 
-      {/* Real Statistics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 relative overflow-hidden">
+      {/* ── Statistics Cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Reports */}
+        <div className="bg-white rounded-xl p-5 space-y-3" style={{ border: '1px solid #E7E5E0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Reports</span>
-            <div className="w-9 h-9 bg-blue-950 text-blue-400 border border-blue-800/50 rounded-xl flex items-center justify-center">
-              <FileText className="w-5 h-5" />
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#77746F' }}>Total Reports</span>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#F7F6F3', border: '1px solid #E7E5E0' }}>
+              <FileText className="w-4 h-4" style={{ color: '#2D2D2D' }} />
             </div>
           </div>
-          <div className="text-3xl font-bold text-white">
+          <div className="text-3xl font-bold" style={{ color: '#181818' }}>
             {isLoading ? <LoadingSpinner size={24} /> : stats.totalReports}
           </div>
-          <div className="text-xs text-slate-500">Submitted by your account</div>
+          <div className="text-xs" style={{ color: '#77746F' }}>Submitted by your account</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 relative overflow-hidden">
+        {/* Under Review */}
+        <div className="bg-white rounded-xl p-5 space-y-3" style={{ border: '1px solid #E7E5E0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Under Review</span>
-            <div className="w-9 h-9 bg-amber-950 text-amber-400 border border-amber-800/50 rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5" />
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#77746F' }}>Under Review</span>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#F5EBD7', border: '1px solid #DDD0AC' }}>
+              <Clock className="w-4 h-4" style={{ color: '#805515' }} />
             </div>
           </div>
-          <div className="text-3xl font-bold text-amber-400">
+          <div className="text-3xl font-bold" style={{ color: '#805515' }}>
             {isLoading ? <LoadingSpinner size={24} /> : stats.underReview}
           </div>
-          <div className="text-xs text-slate-500">AI analysis & verification pending</div>
+          <div className="text-xs" style={{ color: '#77746F' }}>AI analysis & verification pending</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 relative overflow-hidden">
+        {/* In Progress */}
+        <div className="bg-white rounded-xl p-5 space-y-3" style={{ border: '1px solid #E7E5E0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">In Progress</span>
-            <div className="w-9 h-9 bg-purple-950 text-purple-400 border border-purple-800/50 rounded-xl flex items-center justify-center">
-              <Activity className="w-5 h-5" />
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#77746F' }}>In Progress</span>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#F8E8E7', border: '1px solid #E8C2C0' }}>
+              <Activity className="w-4 h-4" style={{ color: '#C62828' }} />
             </div>
           </div>
-          <div className="text-3xl font-bold text-purple-400">
+          <div className="text-3xl font-bold" style={{ color: '#C62828' }}>
             {isLoading ? <LoadingSpinner size={24} /> : stats.inProgress}
           </div>
-          <div className="text-xs text-slate-500">Rescuers assigned or en route</div>
+          <div className="text-xs" style={{ color: '#77746F' }}>Rescuers assigned or en route</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 relative overflow-hidden">
+        {/* Resolved */}
+        <div className="bg-white rounded-xl p-5 space-y-3" style={{ border: '1px solid #E7E5E0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Resolved</span>
-            <div className="w-9 h-9 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-xl flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5" />
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#77746F' }}>Resolved</span>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E7E5E0', border: '1px solid #D8D5CF' }}>
+              <CheckCircle2 className="w-4 h-4" style={{ color: '#292929' }} />
             </div>
           </div>
-          <div className="text-3xl font-bold text-emerald-400">
+          <div className="text-3xl font-bold" style={{ color: '#292929' }}>
             {isLoading ? <LoadingSpinner size={24} /> : stats.resolved}
           </div>
-          <div className="text-xs text-slate-500">Emergency resolved safely</div>
+          <div className="text-xs" style={{ color: '#77746F' }}>Emergency resolved safely</div>
         </div>
       </div>
 
-      {/* Main Grid: My Recent Reports & Emergency Contacts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Reports Section (2 cols) */}
+      {/* ── Main Grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
+
+        {/* Recent Reports (2 cols) */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Activity className="w-5 h-5 text-red-500" />
+            <h2 className="text-base font-bold flex items-center gap-2" style={{ color: '#181818' }}>
+              <Activity className="w-4 h-4" style={{ color: '#C62828' }} />
               My Recent Emergency Reports
             </h2>
             <button
               onClick={() => navigate('/my-reports')}
-              className="text-xs font-medium text-red-400 hover:text-red-300 flex items-center gap-1"
+              className="text-xs font-medium flex items-center gap-1 transition-colors"
+              style={{ color: '#C62828' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#A61F24'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#C62828'; }}
             >
               View All <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {isLoading ? (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 flex items-center justify-center">
+            <div
+              className="bg-white rounded-xl p-8 flex items-center justify-center"
+              style={{ border: '1px solid #E7E5E0' }}
+            >
               <LoadingSpinner size={32} />
             </div>
           ) : recentReports.length === 0 ? (
-            <div className="bg-slate-900/60 border border-dashed border-slate-800 rounded-2xl p-8 text-center space-y-3">
-              <div className="w-12 h-12 bg-slate-800 text-slate-500 rounded-full flex items-center justify-center mx-auto">
-                <FileText className="w-6 h-6" />
+            <div
+              className="bg-white rounded-xl p-8 text-center space-y-3"
+              style={{ border: '1px dashed #D8D5CF' }}
+            >
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto"
+                style={{ backgroundColor: '#F7F6F3', border: '1px solid #E7E5E0' }}
+              >
+                <FileText className="w-6 h-6" style={{ color: '#B7B5B0' }} />
               </div>
-              <h3 className="text-base font-semibold text-slate-300">No emergency reports submitted yet</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <h3 className="text-sm font-semibold" style={{ color: '#292929' }}>
+                No emergency reports submitted yet
+              </h3>
+              <p className="text-xs max-w-sm mx-auto" style={{ color: '#77746F' }}>
                 If you encounter a medical emergency, flood, fire, or accident, click below to log a report immediately.
               </p>
               <button
                 onClick={() => navigate('/report')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-xl shadow transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white rounded-lg transition-colors"
+                style={{ backgroundColor: '#C62828' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#A61F24'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#C62828'; }}
               >
                 <Plus className="w-4 h-4" />
                 Submit First Report
@@ -218,39 +273,42 @@ export default function CitizenDashboardPage() {
                 <div
                   key={report.id}
                   onClick={() => navigate(`/my-reports/${report.id}`)}
-                  className="bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all space-y-3"
+                  className="bg-white rounded-xl p-4 sm:p-5 cursor-pointer transition-all space-y-3"
+                  style={{ border: '1px solid #E7E5E0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'; (e.currentTarget as HTMLElement).style.borderColor = '#D8D5CF'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'; (e.currentTarget as HTMLElement).style.borderColor = '#E7E5E0'; }}
                 >
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-red-400 bg-red-950/60 border border-red-900/50 px-2 py-0.5 rounded-md">
+                      <span
+                        className="text-xs font-mono font-bold px-2 py-0.5 rounded"
+                        style={{ backgroundColor: '#F8E8E7', color: '#C62828', border: '1px solid #E8C2C0' }}
+                      >
                         RG-{report.id.substring(0, 6).toUpperCase()}
                       </span>
-                      <span className="text-xs font-semibold text-slate-300 uppercase">
+                      <span className="text-xs font-semibold uppercase" style={{ color: '#292929' }}>
                         {report.emergencyType || report.type || 'EMERGENCY'}
                       </span>
                     </div>
-
-                    <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
-                      report.verificationStatus === 'RESOLVED'
-                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                        : report.verificationStatus === 'SUBMITTED'
-                        ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                        : 'bg-blue-950 text-blue-400 border border-blue-800'
-                    }`}>
-                      {report.verificationStatus.replace('_', ' ')}
-                    </span>
+                    {statusBadge(report.verificationStatus)}
                   </div>
 
-                  <p className="text-sm text-slate-300 line-clamp-2">
+                  <p className="text-sm line-clamp-2" style={{ color: '#292929' }}>
                     {report.text || 'Emergency report containing photo/voice evidence.'}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-800/60">
-                    <div className="flex items-center gap-1 text-slate-400">
-                      <MapPin className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                  <div
+                    className="flex items-center justify-between text-xs pt-2"
+                    style={{ color: '#77746F', borderTop: '1px solid #F7F6F3' }}
+                  >
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: '#C62828' }} />
                       <span className="truncate max-w-[200px]">{report.locationName || 'GPS Location'}</span>
                     </div>
-                    <div>{new Date(report.createdAt).toLocaleDateString()} {new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div>
+                      {new Date(report.createdAt).toLocaleDateString()}{' '}
+                      {new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -258,42 +316,44 @@ export default function CitizenDashboardPage() {
           )}
         </div>
 
-        {/* Emergency Safety & Helpline Sidebar */}
+        {/* Emergency Helplines Sidebar */}
         <div className="space-y-6">
-          <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 space-y-5">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <PhoneCall className="w-5 h-5 text-red-500" />
+          <div
+            className="bg-white rounded-xl p-6 space-y-5"
+            style={{ border: '1px solid #E7E5E0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+          >
+            <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: '#181818' }}>
+              <PhoneCall className="w-4 h-4" style={{ color: '#C62828' }} />
               National Emergency Helplines
             </h3>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                <span className="font-medium text-slate-300">National Emergency Number</span>
-                <span className="font-bold font-mono text-red-400 text-sm">112</span>
-              </div>
-              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                <span className="font-medium text-slate-300">Police Department</span>
-                <span className="font-bold font-mono text-blue-400 text-sm">100</span>
-              </div>
-              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                <span className="font-medium text-slate-300">Fire & Rescue Department</span>
-                <span className="font-bold font-mono text-amber-400 text-sm">101</span>
-              </div>
-              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                <span className="font-medium text-slate-300">Ambulance & Medical</span>
-                <span className="font-bold font-mono text-emerald-400 text-sm">108 / 102</span>
-              </div>
-              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                <span className="font-medium text-slate-300">Disaster Management (NDRF)</span>
-                <span className="font-bold font-mono text-purple-400 text-sm">1078</span>
-              </div>
+            <div className="space-y-2">
+              {[
+                { label: 'National Emergency', number: '112' },
+                { label: 'Police Department',  number: '100' },
+                { label: 'Fire & Rescue',      number: '101' },
+                { label: 'Ambulance & Medical',number: '108 / 102' },
+                { label: 'NDRF Disaster Mgmt', number: '1078' },
+              ].map(item => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-lg"
+                  style={{ backgroundColor: '#F7F6F3', border: '1px solid #E7E5E0' }}
+                >
+                  <span className="text-sm font-medium" style={{ color: '#292929' }}>{item.label}</span>
+                  <span className="text-sm font-bold font-mono" style={{ color: '#C62828' }}>{item.number}</span>
+                </div>
+              ))}
             </div>
 
             <button
               onClick={() => navigate('/help-safety')}
-              className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+              style={{ backgroundColor: '#F7F6F3', border: '1px solid #E7E5E0', color: '#292929' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#E7E5E0'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = '#F7F6F3'; }}
             >
-              <ShieldAlert className="w-4 h-4 text-red-400" />
+              <Shield className="w-4 h-4" style={{ color: '#C62828' }} />
               View Disaster Safety Guides
             </button>
           </div>

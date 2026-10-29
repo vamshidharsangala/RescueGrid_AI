@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Incident, Alert, Resource } from '../types';
 
 interface SocketContextType {
@@ -25,7 +25,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [lastResourceUpdate, setLastResourceUpdate] = useState<Resource | null>(null);
 
   useEffect(() => {
-    socket = io('http://localhost:3001', { transports: ['websocket', 'polling'] });
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    socket = io(backendUrl, { transports: ['websocket', 'polling'] });
 
     socket.on('connect', () => {
       setConnected(true);

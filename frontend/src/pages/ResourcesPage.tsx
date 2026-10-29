@@ -80,11 +80,11 @@ export default function ResourcesPage() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4">
+      <div className="bg-white px-6 py-4" style={{ borderBottom: '1px solid #E7E5E0' }}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">Emergency Response Resources</h1>
-            <p className="text-xs text-slate-400">Deployed units, rescue teams, and emergency assets ({resources.length} total)</p>
+            <h1 className="text-lg font-bold" style={{ color: '#181818' }}>Emergency Response Resources</h1>
+            <p className="text-xs" style={{ color: '#77746F' }}>Deployed units, rescue teams, and emergency assets ({resources.length} total)</p>
           </div>
           <button onClick={() => setShowAddModal(true)} className="btn-primary flex items-center gap-2">
             <Plus size={14} />
@@ -95,7 +95,7 @@ export default function ResourcesPage() {
         {/* Filters */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-48">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#B7B5B0' }} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -140,12 +140,15 @@ export default function ResourcesPage() {
               <div key={res.id} className="card p-5 space-y-3 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-navy-50 border border-navy-100 rounded-lg flex items-center justify-center text-xl">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
+                      style={{ backgroundColor: '#F7F6F3', border: '1px solid #E7E5E0' }}
+                    >
                       {getResourceTypeIcon(res.type)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-800 text-sm">{res.name}</h3>
-                      <p className="text-xs text-slate-400">{getResourceTypeLabel(res.type)}</p>
+                      <h3 className="font-bold text-sm" style={{ color: '#181818' }}>{res.name}</h3>
+                      <p className="text-xs" style={{ color: '#77746F' }}>{getResourceTypeLabel(res.type)}</p>
                     </div>
                   </div>
                   <span className={`badge ${getResourceStatusClass(res.status)}`}>
@@ -153,30 +156,30 @@ export default function ResourcesPage() {
                   </span>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-lg">
+                <div className="space-y-1.5 text-xs p-3 rounded-lg" style={{ backgroundColor: '#F7F6F3', color: '#77746F' }}>
                   <div className="flex items-center gap-2">
-                    <ShieldCheck size={13} className="text-slate-400" />
-                    <span>Capability: <strong>{res.capability}</strong></span>
+                    <ShieldCheck size={13} style={{ color: '#B7B5B0' }} />
+                    <span style={{ color: '#292929' }}>Capability: <strong>{res.capability}</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Users size={13} className="text-slate-400" />
-                    <span>Capacity / Personnel: <strong>{res.capacity} persons</strong></span>
+                    <Users size={13} style={{ color: '#B7B5B0' }} />
+                    <span style={{ color: '#292929' }}>Capacity / Personnel: <strong>{res.capacity} persons</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin size={13} className="text-slate-400" />
+                    <MapPin size={13} style={{ color: '#B7B5B0' }} />
                     <span className="truncate">{res.locationName || `${res.latitude.toFixed(3)}, ${res.longitude.toFixed(3)}`}</span>
                   </div>
                   {res.contactInfo && (
                     <div className="flex items-center gap-2">
-                      <Phone size={13} className="text-slate-400" />
+                      <Phone size={13} style={{ color: '#B7B5B0' }} />
                       <span>{res.contactInfo}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Status Switch Controls */}
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Set Status:</span>
+                <div className="pt-2 flex items-center justify-between text-xs" style={{ borderTop: '1px solid #E7E5E0' }}>
+                  <span style={{ color: '#B7B5B0' }}>Set Status:</span>
                   <select
                     value={res.status}
                     onChange={e => handleStatusChange(res.id, e.target.value as ResourceStatus)}
@@ -195,88 +198,50 @@ export default function ResourcesPage() {
 
       {/* Deploy Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">Deploy New Emergency Unit</h2>
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-50" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4" style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+            <h2 className="text-lg font-bold" style={{ color: '#181818' }}>Deploy New Emergency Unit</h2>
             <form onSubmit={handleCreateResource} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Unit Name</label>
+                <label className="form-label">Unit Name</label>
                 <input
-                  required
-                  type="text"
+                  required type="text"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. NDRF Alpha Team 4"
                   className="form-input text-sm w-full"
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Resource Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={e => setFormData({ ...formData, type: e.target.value as ResourceType })}
-                    className="form-select text-sm w-full"
-                  >
-                    {TYPES.map(t => (
-                      <option key={t} value={t}>{getResourceTypeLabel(t)}</option>
-                    ))}
+                  <label className="form-label">Resource Type</label>
+                  <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value as ResourceType })} className="form-select text-sm w-full">
+                    {TYPES.map(t => <option key={t} value={t}>{getResourceTypeLabel(t)}</option>)}
                   </select>
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Capacity</label>
-                  <input
-                    type="number"
-                    value={formData.capacity}
-                    onChange={e => setFormData({ ...formData, capacity: parseInt(e.target.value) || 1 })}
-                    className="form-input text-sm w-full"
-                  />
+                  <label className="form-label">Capacity</label>
+                  <input type="number" value={formData.capacity} onChange={e => setFormData({ ...formData, capacity: parseInt(e.target.value) || 1 })} className="form-input text-sm w-full" />
                 </div>
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Capability Description</label>
-                <input
-                  type="text"
-                  value={formData.capability}
-                  onChange={e => setFormData({ ...formData, capability: e.target.value })}
-                  placeholder="e.g. Water rescue & evacuation"
-                  className="form-input text-sm w-full"
-                />
+                <label className="form-label">Capability Description</label>
+                <input type="text" value={formData.capability} onChange={e => setFormData({ ...formData, capability: e.target.value })} placeholder="e.g. Water rescue & evacuation" className="form-input text-sm w-full" />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Base Location Name</label>
-                <input
-                  type="text"
-                  value={formData.locationName}
-                  onChange={e => setFormData({ ...formData, locationName: e.target.value })}
-                  placeholder="e.g. Secunderabad Station"
-                  className="form-input text-sm w-full"
-                />
+                <label className="form-label">Base Location Name</label>
+                <input type="text" value={formData.locationName} onChange={e => setFormData({ ...formData, locationName: e.target.value })} placeholder="e.g. Secunderabad Station" className="form-input text-sm w-full" />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Contact Phone</label>
-                <input
-                  type="text"
-                  value={formData.contactInfo}
-                  onChange={e => setFormData({ ...formData, contactInfo: e.target.value })}
-                  className="form-input text-sm w-full"
-                />
+                <label className="form-label">Contact Phone</label>
+                <input type="text" value={formData.contactInfo} onChange={e => setFormData({ ...formData, contactInfo: e.target.value })} className="form-input text-sm w-full" />
               </div>
-
               <div className="pt-3 flex justify-end gap-2">
-                <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary">
-                  Cancel
-                </button>
-                <button type="submit" className="btn-primary">
-                  Deploy Resource
-                </button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Deploy Resource</button>
               </div>
             </form>
+
           </div>
         </div>
       )}

@@ -55,25 +55,30 @@ export default function AlertsPage() {
 
   const getSeverityBadge = (severity: AlertSeverity) => {
     switch (severity) {
-      case 'CRITICAL':
-        return 'bg-red-100 text-red-700 border-red-200';
-      case 'HIGH':
-        return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'MODERATE':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+      case 'CRITICAL': return { bg: '#F8E8E7', color: '#A61F24', border: '#E8C2C0' };
+      case 'HIGH':     return { bg: '#F5EBD7', color: '#805515', border: '#DDD0AC' };
+      case 'MODERATE': return { bg: '#EAF1F7', color: '#2a7fa8', border: '#B7D5E8' };
+      default:         return { bg: '#E7E5E0', color: '#77746F', border: '#D8D5CF' };
+    }
+  };
+
+  const getBorderColor = (severity: AlertSeverity) => {
+    switch (severity) {
+      case 'CRITICAL': return '#C62828';
+      case 'HIGH':     return '#B7791F';
+      case 'MODERATE': return '#4A7FA8';
+      default:         return '#D8D5CF';
     }
   };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4">
+      <div className="bg-white px-6 py-4" style={{ borderBottom: '1px solid #E7E5E0' }}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">Emergency Alert Center</h1>
-            <p className="text-xs text-slate-400">Broadcast notifications and real-time warnings</p>
+            <h1 className="text-lg font-bold" style={{ color: '#181818' }}>Emergency Alert Center</h1>
+            <p className="text-xs" style={{ color: '#77746F' }}>Broadcast notifications and real-time warnings</p>
           </div>
           <button onClick={() => setShowBroadcastModal(true)} className="btn-danger flex items-center gap-2">
             <Radio size={14} className="animate-pulse" />
@@ -88,11 +93,13 @@ export default function AlertsPage() {
             <button
               key={sev}
               onClick={() => setSeverityFilter(sev)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                severityFilter === sev
-                  ? 'bg-navy-800 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors`}
+              style={severityFilter === sev
+                ? { backgroundColor: '#181818', color: '#fff' }
+                : { backgroundColor: '#E7E5E0', color: '#77746F' }
+              }
+              onMouseEnter={e => { if (severityFilter !== sev) (e.currentTarget as HTMLElement).style.backgroundColor = '#D8D5CF'; }}
+              onMouseLeave={e => { if (severityFilter !== sev) (e.currentTarget as HTMLElement).style.backgroundColor = '#E7E5E0'; }}
             >
               {sev || 'All Alerts'}
             </button>
@@ -110,53 +117,57 @@ export default function AlertsPage() {
           <EmptyState icon={Bell} title="No active emergency alerts" description="All clear — no critical notifications at this time" />
         ) : (
           <div className="space-y-4">
-            {filtered.map(alert => (
+            {filtered.map(alert => {
+              const badge = getSeverityBadge(alert.severity);
+              const borderLeft = getBorderColor(alert.severity);
+              return (
               <div
                 key={alert.id}
-                className={`card p-5 border-l-4 transition-all ${
-                  alert.severity === 'CRITICAL'
-                    ? 'border-l-red-600 bg-red-50/30'
-                    : alert.severity === 'HIGH'
-                    ? 'border-l-amber-500 bg-amber-50/20'
-                    : 'border-l-blue-500'
-                }`}
+                className="card p-5"
+                style={{ borderLeft: `4px solid ${borderLeft}` }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-lg border flex items-center justify-center ${getSeverityBadge(alert.severity)}`}>
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: badge.bg, color: badge.color, border: `1px solid ${badge.border}` }}
+                    >
                       <ShieldAlert size={18} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-base">{alert.title}</h3>
-                      <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                      <h3 className="font-bold text-base" style={{ color: '#181818' }}>{alert.title}</h3>
+                      <div className="flex items-center gap-2 text-xs mt-0.5" style={{ color: '#77746F' }}>
                         <Clock size={12} />
                         <span>{timeAgo(alert.createdAt)}</span>
                         {alert.incidentId && (
                           <>
                             <span>·</span>
-                            <span className="font-mono text-navy-600">Ref Incident</span>
+                            <span className="font-mono" style={{ color: '#77746F' }}>Ref Incident</span>
                           </>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <span className={`px-2.5 py-1 rounded border text-xs font-bold ${getSeverityBadge(alert.severity)}`}>
+                  <span
+                    className="px-2.5 py-1 rounded text-xs font-bold"
+                    style={{ backgroundColor: badge.bg, color: badge.color, border: `1px solid ${badge.border}` }}
+                  >
                     {alert.severity}
                   </span>
                 </div>
 
-                <p className="text-sm text-slate-700 mt-3 leading-relaxed">
+                <p className="text-sm mt-3 leading-relaxed" style={{ color: '#292929' }}>
                   {alert.message}
                 </p>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div className="mt-4 pt-3 flex items-center justify-between text-xs" style={{ borderTop: '1px solid #E7E5E0' }}>
                   {alert.isAcknowledged ? (
-                    <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                    <span className="flex items-center gap-1 font-semibold" style={{ color: '#292929' }}>
                       <CheckCircle size={14} /> Acknowledged by Command
                     </span>
                   ) : (
-                    <span className="text-amber-600 font-medium">
+                    <span className="font-medium" style={{ color: '#805515' }}>
                       ⚠️ Awaiting Command Response
                     </span>
                   )}
@@ -171,22 +182,23 @@ export default function AlertsPage() {
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* Broadcast Modal */}
       {showBroadcastModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <div className="flex items-center gap-2 text-red-600">
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-50" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4" style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+            <div className="flex items-center gap-2" style={{ color: '#C62828' }}>
               <Volume2 size={20} />
               <h2 className="text-lg font-bold">Broadcast Emergency Warning</h2>
             </div>
             <form onSubmit={handleBroadcast} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Alert Headline</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#292929' }}>Alert Headline</label>
                 <input
                   required
                   type="text"
@@ -198,7 +210,7 @@ export default function AlertsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Severity Level</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#292929' }}>Severity Level</label>
                 <select
                   value={broadcastData.severity}
                   onChange={e => setBroadcastData({ ...broadcastData, severity: e.target.value as AlertSeverity })}
@@ -212,7 +224,7 @@ export default function AlertsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Message Body</label>
+                <label className="block text-xs font-semibold mb-1" style={{ color: '#292929' }}>Message Body</label>
                 <textarea
                   required
                   value={broadcastData.message}

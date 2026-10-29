@@ -4,7 +4,8 @@ import { LoadingSpinner, StatCard } from '../components/shared';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
 import { BarChart2, TrendingUp, Clock, ShieldAlert, CheckCircle2 } from 'lucide-react';
 
-const COLORS = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#10b981', '#8b5cf6', '#64748b'];
+// Restrained chart palette: red, charcoal, gray, amber, neutral
+const CHART_COLORS = ['#C62828', '#292929', '#77746F', '#B7791F', '#D8D5CF', '#4A7FA8', '#8F2424'];
 
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
@@ -65,41 +66,44 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto bg-slate-50 p-6 space-y-6">
+    <div className="flex-1 flex flex-col overflow-y-auto p-6 space-y-6" style={{ backgroundColor: '#F7F6F3' }}>
       {/* Header */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <div className="card p-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-navy-100 text-navy-800 rounded-lg flex items-center justify-center">
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: '#F8E8E7', color: '#C62828' }}
+          >
             <BarChart2 size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Disaster Response Analytics</h1>
-            <p className="text-xs text-slate-400">AI intelligence metrics, incident distributions, and resource throughput</p>
+            <h1 className="text-xl font-bold" style={{ color: '#181818' }}>Disaster Response Analytics</h1>
+            <p className="text-xs" style={{ color: '#77746F' }}>AI intelligence metrics, incident distributions, and resource throughput</p>
           </div>
         </div>
       </div>
 
       {/* KPI Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard label="Total Reports Analyzed" value="69" icon={TrendingUp} color="text-navy-800" bgColor="bg-navy-100" />
-        <StatCard label="Avg AI Processing Time" value="1.4s" icon={Clock} color="text-blue-700" bgColor="bg-blue-100" subtext="Real-time extraction" />
-        <StatCard label="Critical Incidents" value="10" icon={ShieldAlert} color="text-red-700" bgColor="bg-red-100" subtext="Score ≥ 80" />
-        <StatCard label="Resolution Rate" value="78%" icon={CheckCircle2} color="text-emerald-700" bgColor="bg-emerald-100" subtext="Active rescue operations" />
+        <StatCard label="Total Reports Analyzed" value="69" icon={TrendingUp} iconColor="#292929" iconBg="#E7E5E0" />
+        <StatCard label="Avg AI Processing Time" value="1.4s" icon={Clock} iconColor="#292929" iconBg="#E7E5E0" subtext="Real-time extraction" />
+        <StatCard label="Critical Incidents" value="10" icon={ShieldAlert} iconColor="#A61F24" iconBg="#F8E8E7" subtext="Score ≥ 80" />
+        <StatCard label="Resolution Rate" value="78%" icon={CheckCircle2} iconColor="#292929" iconBg="#E7E5E0" subtext="Active rescue operations" />
       </div>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Incidents by Disaster Type */}
         <div className="card p-5 space-y-4">
-          <h2 className="text-sm font-bold text-slate-800">Incidents by Disaster Type</h2>
+          <h2 className="text-sm font-bold" style={{ color: '#181818' }}>Incidents by Disaster Type</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data?.byType || []}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
-                <YAxis stroke="#94a3b8" fontSize={11} />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                <Bar dataKey="count" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E5E0" />
+                <XAxis dataKey="name" stroke="#B7B5B0" fontSize={11} />
+                <YAxis stroke="#B7B5B0" fontSize={11} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E7E5E0', color: '#181818' }} />
+                <Bar dataKey="count" fill="#C62828" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -107,15 +111,15 @@ export default function AnalyticsPage() {
 
         {/* Priority Score Distribution */}
         <div className="card p-5 space-y-4">
-          <h2 className="text-sm font-bold text-slate-800">Priority Score Distribution</h2>
+          <h2 className="text-sm font-bold" style={{ color: '#181818' }}>Priority Score Distribution</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data?.byPriority || []}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="range" stroke="#94a3b8" fontSize={11} />
-                <YAxis stroke="#94a3b8" fontSize={11} />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                <Area type="monotone" dataKey="count" stroke="#ef4444" fill="#fee2e2" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E5E0" />
+                <XAxis dataKey="range" stroke="#B7B5B0" fontSize={11} />
+                <YAxis stroke="#B7B5B0" fontSize={11} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E7E5E0', color: '#181818' }} />
+                <Area type="monotone" dataKey="count" stroke="#C62828" fill="#F8E8E7" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -123,24 +127,22 @@ export default function AnalyticsPage() {
 
         {/* Resource Allocation Breakdown */}
         <div className="card p-5 space-y-4">
-          <h2 className="text-sm font-bold text-slate-800">Resource Availability & Deployment</h2>
+          <h2 className="text-sm font-bold" style={{ color: '#181818' }}>Resource Availability & Deployment</h2>
           <div className="h-64 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data?.resourceStatus || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  cx="50%" cy="50%"
+                  innerRadius={60} outerRadius={90}
                   paddingAngle={4}
                   dataKey="value"
                 >
                   {(data?.resourceStatus || []).map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E7E5E0', color: '#181818' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -148,16 +150,16 @@ export default function AnalyticsPage() {
 
         {/* 24-Hour Activity Trend */}
         <div className="card p-5 space-y-4">
-          <h2 className="text-sm font-bold text-slate-800">24-Hour Incident & Resolution Activity</h2>
+          <h2 className="text-sm font-bold" style={{ color: '#181818' }}>24-Hour Incident & Resolution Activity</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data?.responseTrend || []}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="time" stroke="#94a3b8" fontSize={11} />
-                <YAxis stroke="#94a3b8" fontSize={11} />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                <Area type="monotone" dataKey="incidents" stroke="#f97316" fill="#ffedd5" name="Reported Incidents" />
-                <Area type="monotone" dataKey="resolved" stroke="#10b981" fill="#d1fae5" name="Resolved Operations" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E5E0" />
+                <XAxis dataKey="time" stroke="#B7B5B0" fontSize={11} />
+                <YAxis stroke="#B7B5B0" fontSize={11} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E7E5E0', color: '#181818' }} />
+                <Area type="monotone" dataKey="incidents" stroke="#B7791F" fill="#F5EBD7" name="Reported Incidents" />
+                <Area type="monotone" dataKey="resolved" stroke="#292929" fill="#E7E5E0" name="Resolved Operations" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
